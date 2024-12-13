@@ -15,11 +15,19 @@ training_features, testing_features, training_target, testing_target = \
 
 # Average CV score on the training set was: 0.9867813588850174
 exported_pipeline = make_pipeline(
-    StackingEstimator(estimator=ExtraTreesClassifier(bootstrap=True, criterion="gini", max_features=0.45, min_samples_leaf=2, min_samples_split=10, n_estimators=100)),
-    KNeighborsClassifier(n_neighbors=3, p=2, weights="distance")
+    StackingEstimator(estimator=ExtraTreesClassifier(bootstrap=True, 
+                                                     criterion="gini", 
+                                                     max_features=0.45, 
+                                                     min_samples_leaf=2, 
+                                                     min_samples_split=10, 
+                                                     n_estimators=100)),
+    KNeighborsClassifier(n_neighbors=3, 
+                         p=2, 
+                         weights="distance")
 )
-# Fix random state for all the steps in exported pipeline
-set_param_recursive(exported_pipeline.steps, 'random_state', 42)
 
-exported_pipeline.fit(training_features, training_target)
+# Fix random state for all the steps in exported pipeline
+exported_pipeline = set_param_recursive(exported_pipeline.steps, 'random_state', 42)
+
+exported_pipeline = exported_pipeline.fit(training_features, training_target)
 results = exported_pipeline.predict(testing_features)
